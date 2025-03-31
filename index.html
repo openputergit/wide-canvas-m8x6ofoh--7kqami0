@@ -1,0 +1,191 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>TradeSage AI - Market Insights Platform</title>
+    <script src="https://unpkg.com/three@0.132.2/build/three.min.js"></script>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css">
+
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #0a1929;
+            color: #ffffff;
+        }
+        .gradient-bg {
+            background: linear-gradient(45deg, #1a365d, #0a1929);
+        }
+        .card {
+            background: rgba(255, 255, 255, 0.05);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+        #threejs-container {
+            position: fixed;
+            top: 0;
+            left: 0;
+            z-index: -1;
+        }
+    </style>
+</head>
+<body>
+    <canvas id="threejs-container"></canvas>
+
+    <div class="min-h-screen">
+        <nav class="p-4 gradient-bg">
+            <div class="container mx-auto flex justify-between items-center">
+                <h1 class="text-2xl font-bold">TradeSage AI</h1>
+                <div class="space-x-4">
+                    <button class="px-4 py-2 rounded-lg bg-blue-600 hover:bg-blue-700">Dashboard</button>
+                    <button class="px-4 py-2 rounded-lg bg-transparent border border-blue-600 hover:bg-blue-600/20">Login</button>
+                </div>
+            </div>
+        </nav>
+
+        <main class="container mx-auto px-4 py-8">
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                <!-- Market Overview -->
+                <div class="card rounded-xl p-6">
+                    <h2 class="text-xl font-semibold mb-4">Market Overview</h2>
+                    <div class="space-y-4">
+                        <div class="flex justify-between">
+                            <span>NIFTY 50</span>
+                            <span class="text-green-500">↑ 19,425.35</span>
+                        </div>
+                        <div class="flex justify-between">
+                            <span>S&P 500</span>
+                            <span class="text-red-500">↓ 4,320.06</span>
+                        </div>
+                        <div class="flex justify-between">
+                            <span>BTC/USD</span>
+                            <span class="text-green-500">↑ 35,245.12</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Trading Strategies -->
+                <div class="card rounded-xl p-6">
+                    <h2 class="text-xl font-semibold mb-4">AI Trading Strategies</h2>
+                    <div class="space-y-4">
+                        <div class="p-3 rounded-lg bg-blue-600/20">
+                            <h3 class="font-medium">Momentum Strategy</h3>
+                            <p class="text-sm text-gray-300">Signal: Strong Buy</p>
+                            <p class="text-xs text-gray-400">Based on RSI and MACD indicators</p>
+                        </div>
+                        <div class="p-3 rounded-lg bg-blue-600/20">
+                            <h3 class="font-medium">Mean Reversion</h3>
+                            <p class="text-sm text-gray-300">Signal: Hold</p>
+                            <p class="text-xs text-gray-400">Bollinger Bands analysis</p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Market Insights -->
+                <div class="card rounded-xl p-6">
+                    <h2 class="text-xl font-semibold mb-4">Market Insights</h2>
+                    <div class="space-y-4">
+                        <div class="text-sm">
+                            <span class="text-blue-400">AI Prediction:</span>
+                            <p>Bullish trend expected in tech sector based on earning reports</p>
+                        </div>
+                        <div class="text-sm">
+                            <span class="text-blue-400">Risk Analysis:</span>
+                            <p>Market volatility index showing moderate risk levels</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Trading Education -->
+            <div class="mt-8 card rounded-xl p-6">
+                <h2 class="text-xl font-semibold mb-4">Trading Education</h2>
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <div>
+                        <h3 class="font-medium mb-2">Basic Strategies</h3>
+                        <ul class="list-disc list-inside text-sm space-y-2 text-gray-300">
+                            <li>Understanding Price Action</li>
+                            <li>Support and Resistance Levels</li>
+                            <li>Technical Analysis Basics</li>
+                            <li>Risk Management</li>
+                        </ul>
+                    </div>
+                    <div>
+                        <h3 class="font-medium mb-2">Advanced Topics</h3>
+                        <ul class="list-disc list-inside text-sm space-y-2 text-gray-300">
+                            <li>Options Trading Strategies</li>
+                            <li>Crypto Market Analysis</li>
+                            <li>Algorithmic Trading</li>
+                            <li>Portfolio Optimization</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <script>
+        // Three.js Animation
+        const scene = new THREE.Scene();
+        const camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
+        const renderer = new THREE.WebGLRenderer({
+            canvas: document.querySelector('#threejs-container'),
+            alpha: true
+        });
+
+        renderer.setSize(window.innerWidth, window.innerHeight);
+        renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+
+        // Create particles
+        const particlesGeometry = new THREE.BufferGeometry();
+        const particlesCount = 5000;
+        const posArray = new Float32Array(particlesCount * 3);
+
+        for(let i = 0; i < particlesCount * 3; i++) {
+            posArray[i] = (Math.random() - 0.5) * 5;
+        }
+
+        particlesGeometry.setAttribute('position', new THREE.BufferAttribute(posArray, 3));
+
+        const particlesMaterial = new THREE.PointsMaterial({
+            size: 0.005,
+            color: '#0066ff'
+        });
+
+        const particlesMesh = new THREE.Points(particlesGeometry, particlesMaterial);
+        scene.add(particlesMesh);
+
+        camera.position.z = 3;
+
+        // Animation
+        function animate() {
+            requestAnimationFrame(animate);
+            particlesMesh.rotation.y += 0.001;
+            renderer.render(scene, camera);
+        }
+        animate();
+
+        // Handle window resize
+        window.addEventListener('resize', () => {
+            camera.aspect = window.innerWidth / window.innerHeight;
+            camera.updateProjectionMatrix();
+            renderer.setSize(window.innerWidth, window.innerHeight);
+        });
+
+        // Simulated market data updates
+        setInterval(() => {
+            const randomChange = (Math.random() - 0.5) * 10;
+            const elements = document.querySelectorAll('.market-value');
+            elements.forEach(el => {
+                const currentValue = parseFloat(el.textContent);
+                const newValue = (currentValue + randomChange).toFixed(2);
+                el.textContent = newValue;
+                el.className = randomChange > 0 ? 'text-green-500' : 'text-red-500';
+            });
+        }, 5000);
+    </script>
+<script>document.body.addEventListener('wheel', e => { if (!e.ctrlKey) return; e.preventDefault(); return }, { passive: false })</script>
+	</body>
+</html>
